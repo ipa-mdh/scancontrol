@@ -265,6 +265,8 @@ namespace scancontrol_driver
         value_z.resize(config_.resolution);
         // value_x.resize(t_partial_profile_.nPointCount);
         // value_z.resize(t_partial_profile_.nPointCount);
+        maximum.resize(config_.resolution);
+        threshold.resize(config_.resolution);
         ROS_INFO_STREAM("Profile is losing " << std::to_string(lost_values) << " values due to timestamp of 16 byte at the end of the profile.");
 
         // Prepare new point cloud message
@@ -308,6 +310,9 @@ namespace scancontrol_driver
         device_interface_ptr->ConvertProfile2Values(&profile_buffer[0], profile_buffer.size(), config_.resolution, PROFILE, device_type, 0, NULL, &maximum[0], &threshold[0], &value_x[0], &value_z[0], NULL, NULL);
         for (int i = 0; i < config_.resolution; i++){
             point_cloud_msg->points[i].x = value_x[i]/1000.0;
+            // if (maximum[i] != 0){
+            //     ROS_INFO_STREAM("" << std::to_string(i) << " " << std::to_string(maximum[i]) << " .---- " << std::to_string(threshold[i]));
+            // }
             point_cloud_msg->points[i].intensity = maximum[i];
             
             // Fill in NaN if the scanner is to close or far away (sensor returns ~32.232) and for the final few points which are overwritten by the timestamp data
