@@ -302,9 +302,10 @@ namespace scancontrol_driver
     /* Process raw profile data and create the point cloud message */
     int ScanControlDriver::Profile2PointCloud(){
 
-        device_interface_ptr->ConvertPartProfile2Values(&profile_buffer[0], profile_buffer.size(), &t_partial_profile_, device_type, 0, NULL, NULL, NULL, &value_x[0], &value_z[0], NULL, NULL);
+        device_interface_ptr->ConvertPartProfile2Values(&profile_buffer[0], profile_buffer.size(), &t_partial_profile_, device_type, 0, NULL, &maximum[0], &threshold[0], &value_x[0], &value_z[0], NULL, NULL);
         for (int i = 0; i < config_.resolution; i++){
             point_cloud_msg->points[i].x = value_x[i]/1000;
+            point_cloud_msg->points[i].intensity = maximum[i];
             
             // Fill in NaN if the scanner is to close or far away (sensor returns ~32.232) and for the final few points which are overwritten by the timestamp data
             if ((value_z[i] < 32.5) || (i >= config_.resolution - lost_values)){

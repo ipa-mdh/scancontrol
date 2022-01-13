@@ -96,6 +96,7 @@ namespace scancontrol_driver
             TPartialProfile t_partial_profile_;
             std::vector<guint8> profile_buffer;
             std::vector<double> value_x, value_z;
+            std::vector<unsigned short> maximum, threshold;
             int lost_values;
             unsigned int lost_profiles;
 
