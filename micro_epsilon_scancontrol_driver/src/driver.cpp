@@ -86,13 +86,34 @@ namespace scancontrol_driver
                 }
                 // Fallback if serial are not found:
                 if (selected_interface == -1){
-                    ROS_WARN_STREAM("Interface not found! Searched for serial = " << config_.serial);
+                    ROS_WARN_STREAM("Interface not found! Searched for seril = " << config_.serial);
                     ROS_WARN("Available interfaces:");
                     for (gint8 i = 0; i < interface_count; i++){
                         ROS_WARN_STREAM("   " << available_interfaces[i]);
                     }
                     selected_interface = 0;
                     ROS_INFO_STREAM("\nSelecting first available interface: " << available_interfaces[selected_interface]);
+                }
+            } else if (config_.serial == "") {
+                for (int i = 0; i < interface_count; i++){
+                    std::string interface(available_interfaces[i]);
+                    ROS_INFO_STREAM("No serial number given. Searchng for scanCONTROL" << interface);
+                    if (interface.find("scanCONTROL") != std::string::npos){
+                        ROS_INFO_STREAM("Interface found: " << interface);
+                        selected_interface = i;
+                        break;
+                    }
+
+                // Fallback if serial are not found:
+                if (selected_interface == -1){
+                    ROS_WARN_STREAM("Interface not found! Searched for seril = " << config_.serial);
+                    ROS_WARN("Available interfaces:");
+                    for (gint8 i = 0; i < interface_count; i++){
+                        ROS_WARN_STREAM("   " << available_interfaces[i]);
+                    }
+                    selected_interface = 0;
+                    ROS_INFO_STREAM("\nSelecting first available interface: " << available_interfaces[selected_interface]);
+                }
                 }
             } else{
                 selected_interface = 0;
@@ -128,6 +149,8 @@ namespace scancontrol_driver
             ROS_FATAL_STREAM("Error while retrieving device type! Code: " << return_code);
             goto stop_initialization;
         }
+        ROS_INFO_STREAM("serial number " << config_.serial);
+        ROS_INFO_STREAM("device_type " << device_type);
         if (device_type >= scanCONTROL27xx_25 && device_type <= scanCONTROL27xx_xxx) {
             ROS_INFO_STREAM("The scanCONTROL is a scanCONTROL27xx, with serial number " << config_.serial << ".");
             config_.model = std::string("scanCONTROL27xx");
